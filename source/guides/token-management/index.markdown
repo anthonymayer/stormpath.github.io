@@ -193,13 +193,13 @@ Request:
 
 {% codetab id:get-access-token langs:java curl node php ruby python %}
 ------
-PasswordGrantRequest passwordGrantRequest = Oauth2Requests.PASSWORD_GRANT_REQUEST.builder()
+OAuthPasswordGrantRequestAuthentication oauthPwdGrantRequest = OAuthRequests.OAUTH_PASSWORD_GRANT_REQUEST.builder()
   .setLogin("username@test.com")
   .setPassword("Password1!")
   .build();
-OauthGrantAuthenticationResult oauthGrantAuthenticationResult = Authenticators.PASSWORD_GRANT_AUTHENTICATOR
+OAuthGrantRequestAuthenticationResult oauthPwdGrantResult = Authenticators.OAUTH_PASSWORD_GRANT_REQUEST_AUTHENTICATOR
   .forApplication(application)
-  .authenticate(passwordGrantRequest);
+  .authenticate(oauthPwdGrantRequest);
 ------
 curl -X POST --user $YOUR_API_KEY_ID:$YOUR_API_KEY_SECRET \
     -H "Content-Type: application/x-www-form-urlencoded" \
@@ -310,12 +310,12 @@ Request:
 
 {% codetab id:validate-token langs:java curl node php ruby python %}
 ------
-JwtAuthenticationRequest jwtRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
-  .setJwt(oauthGrantAuthenticationResult.getAccessTokenString())
+OAuthBearerRequestAuthentication oauthBearerRequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder()
+  .setJwt(oauthPwdGrantResult.getAccessTokenString())
   .build();
-JwtAuthenticationResult jwtAuthenticationResult = Authenticators.JWT_AUTHENTICATOR
+OAuthBearerRequestAuthenticationResult oauthBearerResult = Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR
   .forApplication(application)
-  .authenticate(jwtRequest);
+  .authenticate(oauthBearerRequest);
 ------
 curl -X GET --user $YOUR_API_KEY_ID:$YOUR_API_KEY_SECRET \
     https://api.stormpath.com/v1/applications/$YOUR_APPLICATION_ID/authTokens/2YotnFZFEjr1zCsicMWpAA.adf4661fe6715ed477ZiTtPFMD0DyL6KhEg5RGg954193e68b63036.7ZiTtPFMD0DyL6KhEg5RGg
@@ -434,13 +434,13 @@ To use a JWT library to validate the token:
 
 {% codetab id:get-access-token langs:java node php ruby python %}
 ------
-JwtAuthenticationRequest jwtRequest = Oauth2Requests.JWT_AUTHENTICATION_REQUEST.builder()
-  .setJwt(oauthGrantAuthenticationResult.getAccessTokenString())
+OAuthBearerRequestAuthentication oauthBearerRequest = OAuthRequests.OAUTH_BEARER_REQUEST.builder()
+  .setJwt(oauthPwdGrantResult.getAccessTokenString())
   .build();
-JwtAuthenticationResult jwtAuthenticationResult = Authenticators.JWT_AUTHENTICATOR
+OAuthBearerRequestAuthenticationResult oauthBearerResult = Authenticators.OAUTH_BEARER_REQUEST_AUTHENTICATOR
   .forApplication(application)
   .withLocalValidation()
-  .authenticate(jwtRequest);
+  .authenticate(oauthBearerRequest);
 ------
 // This sample uses NJWT a Node JWT Library (https://github.com/jwtk/jjwt)
 
@@ -489,12 +489,12 @@ Once your application has a `Refresh Token`, you can pass the token to your Stor
 
 {% codetab id:refresh-access-token langs:java curl node php ruby python %}
 ------
-RefreshGrantRequest refreshRequest = Oauth2Requests.REFRESH_GRANT_REQUEST.builder()
-  .setRefreshToken(oauthGrantAuthenticationResult.getRefreshTokenString())
+OAuthRefreshTokenRequestAuthentication oauthRefreshRequest = OAuthRequests.OAUTH_REFRESH_TOKEN_REQUEST.builder()
+  .setRefreshToken(oauthPwdGrantResult.getRefreshTokenString())
   .build();
-OauthGrantAuthenticationResult result = Authenticators.REFRESH_GRANT_AUTHENTICATOR
+OAuthGrantRequestAuthenticationResult oauthRefreshResult = Authenticators.OAUTH_REFRESH_TOKEN_REQUEST_AUTHENTICATOR
   .forApplication(application)
-  .authenticate(refreshRequest);
+  .authenticate(oauthRefreshRequest);
 ------
 curl -X POST --user $YOUR_API_KEY_ID:$YOUR_API_KEY_SECRET \
     -H "Content-Type: application/x-www-form-urlencoded" \
@@ -659,7 +659,7 @@ For example:
 
 {% codetab id:delete-access-token langs:java curl node php ruby python %}
 ------
-AccessToken accessToken = oauthGrantAuthenticationResult.getAccessToken();
+AccessToken accessToken = result.getAccessToken();
 accessToken.delete();
 ------
 curl -X DELETE --user $YOUR_API_KEY_ID:$YOUR_API_KEY_SECRET \
